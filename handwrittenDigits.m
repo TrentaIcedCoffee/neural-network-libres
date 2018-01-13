@@ -1,5 +1,6 @@
 % NOTE Run the following code on a production machine,
 %   taking less than 8 hours
+
 %% neural network model for handwritten digits
 
 %   Train handwritten digits using neural network model
@@ -9,6 +10,13 @@
 %   optimize regulating rate; Run 3: compute Theta and test on test set
 
 %% Load data
+close all;
+clear;
+clc;
+
+addpath('./lib/');
+addpath('./data_handwritten_digits/');
+
 load('handwrittenDigits.mat');
 if ~exist('X', 'var') || ~exist('y', 'var')
     fprintf('ERR, X or y not contained in mat file\n');
@@ -53,4 +61,6 @@ fprintf('train accuracy %.2f\n', accuracyTrain);
 fprintf('cross validation accuracy %.2f\n', accuracyCV);
 fprintf('test accuracy %.2f\n', accuracyTest);
 
-%% Algorithm details
+%% Clean
+rmpath('./lib/');
+rmpath('./data_handwritten_digits/');

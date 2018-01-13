@@ -22,6 +22,9 @@ close all;
 clear;
 clc;
 
+addpath('./lib/');
+addpath('./data_debug/');
+
 load('data.mat');
 load('expect.mat');
 
@@ -112,7 +115,9 @@ fprintf('costFunctionIter.m ok\n');
 
 %% Debug train.m
 % This section is commented due to high difference on computations from different computers
-% Ignoring debug of train is safe.
+% Ignoring debug of train is safe, 
+% since sampleNumberVsCost.m and
+% regulatingRateVsCost.m cover train.m
 
 % ThetaCellTrainedRun = train(X, y, ThetaCellInitial, regulatingRate, maxIter, architecturePara);
 % if ~isApprox(ThetaCellTrainedRun, ThetaCellTrainedExpect)
@@ -155,3 +160,7 @@ fprintf('regulatingRateVsCost.m ok\n');
 
 %% Summary
 fprintf('all ok\n');
+
+%% Clean
+rmpath('./lib/');
+rmpath('./data_debug/');
