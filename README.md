@@ -15,18 +15,18 @@
 	- Cross validation curve and training curve never go across. 
 	- Difference between cv and train is getting smaller as sample increases
 	- Relatively high cross validation cost and low train cost  	
-	- ![high_variance](https://github.com/TrentaIcedCoffee/algo-ml/blob/master/readme_resource/high_variance.png)
+	- ![high_variance](/readme_resource/high_variance.png)
 
 ### Run 1 
 #### sample number [2000, 3000] (max iteration 400, 1001 runs, takes 2.23 hours)
-![run1_2000_3000](https://github.com/TrentaIcedCoffee/algo-ml/blob/master/readme_resource/run1_2000_3000.jpg) 
+![run1_2000_3000](/readme_resource/run1_2000_3000.jpg) 
 - Most optimized sample number is 2989.
 - We see cross validation and train doesn't cross
 - We fail to see convergence.
 - Cross validation and train have similar and low cost.
 - We need to run sample number [1, 1000] to see if cross validation and train converge.  
 #### sample number [1, 1000] (max iteration 400, 1001 runs, takes 0.84 hour)  
-![run1_1_1000](https://github.com/TrentaIcedCoffee/algo-ml/blob/ali/readme_resource/run1_1_1000.jpg)  
+![run1_1_1000](/readme_resource/run1_1_1000.jpg)  
 - We see cross validation and train converge, thus we infer they also converge on [2000, 3000].
 
 ### Analysis After Run 1
@@ -43,12 +43,12 @@
 
 ### Run 2
 #### lambda [0, 10] (max iteration 400, 11 runs, takes less than 1 minute)
-![run2_0_10](https://github.com/TrentaIcedCoffee/algo-ml/blob/master/readme_resource/run2_0_10.jpg)  
+![run2_0_10](/readme_resource/run2_0_10.jpg)  
 - We see a convex lambda curve.
 - The lambda curve has minimum in range [0, 2].
 - We can run [0, 2] with precision 0.01 to find accurate minimum.  
 #### lambda [0, 2] (max iteration 400, 201 runs, takes 0.56 hour)
-![run2_0_2](https://github.com/TrentaIcedCoffee/algo-ml/blob/master/readme_resource/run2_0_2.jpg)
+![run2_0_2](/readme_resource/run2_0_2.jpg)
 - Above curves follow the same routine.
 - We find minimum lambda 0.88.
 
@@ -60,7 +60,7 @@
 ### Run 3 (sample number 2989, lambda 0.88, max iteration 4000, 4000 runs, takes less than 3 minutes)
 - Train accuracy 99.90
 - Cross validation accuracy 93.60
-- Test accuracy 93.60
+- **Test accuracy 93.60**
 
 ---
 
