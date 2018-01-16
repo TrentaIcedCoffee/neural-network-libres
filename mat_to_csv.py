@@ -1,6 +1,6 @@
 '''\
-convert .mat to .csv
-py mat_to_csv.py <resfile> <desfolder>
+	convert .mat to .csv
+	python mat_to_csv.py <resfile> [<desfolder>]
 '''
 
 import sys
@@ -21,11 +21,12 @@ if not os.path.exists(path_des):
 	os.makedirs(path_des)
 
 data = scipy.io.loadmat(path_res)
-print(data)
-for i in data:
-	print(i)
-	print(data[i])
-	# print(data[i].dtype)
-	# print(type(data[i].dtype))
-	# if '__' not in i and 'readme' not in i:
-	# np.savetxt((path_des + '/' + i + '.csv'), data[i], delimiter = ',')
+for name in data:
+	if '__' not in name and 'readme' not in name:
+		try:
+			np.savetxt((path_des + '/' + name + '.csv'), data[name], delimiter = ',')
+		except TypeError:
+			print('warning, ignore variable %s (has type cannot be parsed to csv)' % name)
+			continue
+
+print('finished')
