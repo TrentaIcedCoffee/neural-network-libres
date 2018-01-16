@@ -31,9 +31,7 @@ y_test = y_total[4000:];
 
 
 for val in y_train:
-    print(type(val))
     print(np.array_equal(val, [1]))
-    print(val)
 
 exit(0)
 
