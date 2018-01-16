@@ -4,6 +4,7 @@
 '''
 
 import matplotlib.pyplot as plt
+from sklearn.utils import shuffle
 from sklearn.datasets import fetch_mldata
 from sklearn.neural_network import MLPClassifier
 import numpy as np
@@ -16,25 +17,23 @@ def csv_to_nparray(path):
         spamreader = csv.reader(infile, delimiter = ',')
         for row in spamreader:
             raw_data.append(row)
-    return np.array(raw_data)
+    return np.array(raw_data, np.dtype(float))
 
-X_train = csv_to_nparray('debug/X.csv')
-y_train = csv_to_nparray('debug/y.csv')
-X_cv = csv_to_nparray('debug/XCV.csv')
-y_cv = csv_to_nparray('debug/yCV.csv')
-X_test = csv_to_nparray('debug/XTest.csv')
-y_test = csv_to_nparray('debug/yTest.csv')
+X_total = csv_to_nparray('xTotal.csv')
+y_total = csv_to_nparray('yTotal.csv')
+X_total, y_total = shuffle(X_total, y_total)
+X_train = X_total[:3000];
+X_cv = X_total[3000:4000];
+X_test = X_total[4000:];
+y_train = y_total[:3000];
+y_cv = y_total[3000:4000];
+y_test = y_total[4000:];
 
-print(X_train.shape)
-print(y_train.shape)
-print(X_cv.shape)
-print(y_cv.shape)
-print(X_test.shape)
-print(y_test.shape)
 
 for val in y_train:
-    # print(val)
-    pass
+    print(type(val))
+    print(np.array_equal(val, [1]))
+    print(val)
 
 exit(0)
 
