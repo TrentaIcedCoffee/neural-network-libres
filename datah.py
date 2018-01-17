@@ -1,5 +1,6 @@
 '''\
     Data handle, pre-process data for algebraic use
+    data_mat = datah.Data(path)
 '''
 
 import csv
