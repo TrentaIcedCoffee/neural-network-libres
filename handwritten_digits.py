@@ -10,6 +10,7 @@ from sklearn.neural_network import MLPClassifier
 import numpy as np
 import util
 import csv
+import datah
 
 def csv_to_nparray(path):
     raw_data = []
@@ -19,8 +20,8 @@ def csv_to_nparray(path):
             raw_data.append(row)
     return np.array(raw_data, np.dtype(float))
 
-X_total = csv_to_nparray('xTotal.csv')
-y_total = csv_to_nparray('yTotal.csv')
+X_total = datah.Data('xTotal.csv').to_nparray(float)
+y_total = datah.Data('yTotal.csv').to_nparray(int)
 for i in range(0, y_total.shape[0]):
     y_total[i] = y_total[i] if y_total[i] != 10 else 0 # label 10 -> label 0
 X_total, y_total = shuffle(X_total, y_total)
