@@ -8,25 +8,31 @@ import os
 import scipy.io
 import numpy as np
 
-if len(sys.argv) != 3 and len(sys.argv) != 2:
-	raise ValueError('missing res')
+def parse(argv) -> '(path_res, path_des)':
+	if len(argv) != 3 and len(argv) != 2:
+		raise ValueError('argv expect len 3 or 2, has {}'.format(len(argv)))
+	path_res = argv[1]
+	path_des = argv[2] if len(argv) == 3 else 'mat_to_csv'
+	return (path_res, path_des)
 
-path_res = sys.argv[1]
-if len(sys.argv) == 2:
-	path_des = 'mat_to_csv'
-else:
-	path_des = sys.argv[2];
+def write_data(data: 'np.array', path_des) -> None:
+	for name in data:
+		if '__' not in name and 'readme' not in name:
+			try:
+				np.savetxt((path_des + '/' + name + '.csv'), data[name], delimiter = ',')
+			except TypeError:
+				print('warning, ignore variable {} (has type cannot be parsed to csv)'.format(name))
+				continue
 
-if not os.path.exists(path_des):
-	os.makedirs(path_des)
+def main():
+	path_res, path_des = parse(sys.argv);
+	if not os.path.exists(path_des):
+		os.makedirs(path_des)
 
-data = scipy.io.loadmat(path_res)
-for name in data:
-	if '__' not in name and 'readme' not in name:
-		try:
-			np.savetxt((path_des + '/' + name + '.csv'), data[name], delimiter = ',')
-		except TypeError:
-			print('warning, ignore variable %s (has type cannot be parsed to csv)' % name)
-			continue
+	data = scipy.io.loadmat(path_res)
 
-print('finished')
+	write_data(data, path_des)
+
+	print('finished')
+
+if __name__ == '__main__': main()
