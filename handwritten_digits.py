@@ -103,8 +103,8 @@ def main():
 														prepare_data('data_handwritten_digits/X_total.csv',
 																		'data_handwritten_digits/y_total.csv'))
 	# default, no optimization
-	num_sample_opt = X_train.shape[0];
-	regulating_rate_opt = 0;
+	num_sample_opt = X_train.shape[0]
+	regulating_rate_opt = 0
 	start = time.time()
 
 	# run on a production machine
