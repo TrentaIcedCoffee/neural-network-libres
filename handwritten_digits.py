@@ -2,9 +2,6 @@
 	Train neural network model using handwritten digits data
 	python handwritten_digits.py
 '''
-
-import matplotlib.pyplot as plt
-
 from sklearn.utils import shuffle
 from sklearn.datasets import fetch_mldata
 from sklearn.neural_network import MLPClassifier
@@ -42,10 +39,6 @@ def predict_prob(mlps, X_test):
         returns prediction matrix, matrix[i]: predict probability from num_classes mlps
         matrix has shape (num_sample, num_classes)
     '''
-	# edge case for num_test == 1
-    if X_test.ndim == 1:
-        X_test = np.array([X_test], np.dtype(float))
-
     hypo_prob_temp = [] # has len num_classes
     for mlp in mlps:
         hypo_prob_temp.append(mlp.predict_proba(X_test)[:, 1])
@@ -62,10 +55,6 @@ def predict(mlps, X_test):
 def judge(hypo, y):
 	if y.dtype != int:
 		raise ValueError('y.dtype expect int, has {}'.format(y.dtype))
-
-	# edge case for num_test == 1
-	if y.ndim == 1:
-		y = np.array([y], np.dtype(int))
 
 	num_correct = 0
 	for i in range(0, y.shape[0]):
@@ -110,7 +99,9 @@ def prepare_data(x_path, y_path):
 	return (X_train, y_train, X_cv, y_cv, X_test, y_test)
 
 def main():
-	X_train, y_train, X_cv, y_cv, X_test, y_test = prepare_data('xTotal.csv', 'yTotal.csv')
+	X_train, y_train, X_cv, y_cv, X_test, y_test = map(regulate,
+														prepare_data('data_handwritten_digits/X_total.csv',
+																		'data_handwritten_digits/y_total.csv'))
 	# default, no optimization
 	num_sample_opt = X_train.shape[0];
 	regulating_rate_opt = 0;

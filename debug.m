@@ -115,7 +115,7 @@ fprintf('costFunctionIter.m ok\n');
 
 %% Debug train.m
 % This section is commented due to high difference on computations from different computers
-% Ignoring debug of train is safe, 
+% Ignoring debug of train is safe,
 % since sampleNumberVsCost.m and
 % regulatingRateVsCost.m cover train.m
 
