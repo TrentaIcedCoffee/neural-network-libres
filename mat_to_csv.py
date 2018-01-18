@@ -25,7 +25,7 @@ def write_data(data: 'np.array', path_des) -> None:
 				continue
 
 def main():
-	path_res, path_des = parse(sys.argv);
+	path_res, path_des = parse(sys.argv)
 	if not os.path.exists(path_des):
 		os.makedirs(path_des)
 
