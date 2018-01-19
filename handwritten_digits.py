@@ -64,7 +64,7 @@ def judge(hypo, y):
 def optimize_num_sample(X_train, y_train, X_cv, y_cv):
 	num_sample_opt = 0
 	precision_opt = 0
-	for num_sample in range(1, 10):
+	for num_sample in range(2800, X_train.shape(0) + 1):
 		mlps = train(X_train[:num_sample], y_train[:num_sample], 0)
 		hypo = predict(mlps, X_cv)
 		precision = judge(hypo, y_cv)
@@ -76,7 +76,7 @@ def optimize_num_sample(X_train, y_train, X_cv, y_cv):
 def optimize_regulating_rate(X_train, y_train, X_cv, y_cv):
 	regulating_rate_opt = 0
 	precision_opt = 0
-	for i in range(0, 1000):
+	for i in range(0, 100):
 		regulating_rate = i / 100 # regulating_rate: [0, 10) with precision 0.01
 		mlps = train(X_train, y_train, regulating_rate)
 		hypo = predict(mlps, X_cv)
@@ -108,11 +108,11 @@ def main():
 	start = time.time()
 
 	# run on a production machine
-	# num_sample_opt = optimize_num_sample(X_train, y_train, X_cv, y_cv)
-	# X_train = X_train[:num_sample_opt]
-	# y_train = y_train[:num_sample_opt]
-	#
-	# regulating_rate_opt = optimize_regulating_rate(X_train, y_train, X_cv, y_cv)
+	num_sample_opt = optimize_num_sample(X_train, y_train, X_cv, y_cv)
+	X_train = X_train[:num_sample_opt]
+	y_train = y_train[:num_sample_opt]
+
+	regulating_rate_opt = optimize_regulating_rate(X_train, y_train, X_cv, y_cv)
 
 	mlps = train(X_train, y_train, regulating_rate_opt)
 	hypo = predict(mlps, X_test)
