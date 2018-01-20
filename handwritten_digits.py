@@ -74,17 +74,18 @@ def optimize_num_sample(X_train, y_train, X_cv, y_cv):
 	return num_sample_opt
 
 def optimize_regulating_rate(X_train, y_train, X_cv, y_cv):
-	regulating_rate_opt = 0
-	precision_opt = 0
-	for i in range(0, 100):
-		regulating_rate = i / 100 # regulating_rate: [0, 10) with precision 0.01
-		mlps = train(X_train, y_train, regulating_rate)
-		hypo = predict(mlps, X_cv)
-		precision = judge(hypo, y_cv)
-		if precision > precision_opt:
-			precision_opt = precision
-			regulating_rate_opt = regulating_rate
-	return regulating_rate_opt
+    regulating_rate_opt = 0
+    precision_opt = 0
+    for i in range(0, 100):
+        regulating_rate = i / 100 # regulating_rate: [0, 1) with precision 0.01
+        print(regulating_rate)
+        mlps = train(X_train, y_train, regulating_rate)
+        hypo = predict(mlps, X_cv)
+        precision = judge(hypo, y_cv)
+        if precision > precision_opt:
+            precision_opt = precision
+            regulating_rate_opt = regulating_rate
+    return regulating_rate_opt
 
 def prepare_data(x_path, y_path):
 	X_total = datah.Data(x_path).to_nparray(float)
@@ -108,13 +109,14 @@ def main():
 	start = time.time()
 
 	# run on a production machine
-	num_sample_opt = optimize_num_sample(X_train, y_train, X_cv, y_cv)
-	X_train = X_train[:num_sample_opt]
-	y_train = y_train[:num_sample_opt]
+	# num_sample_opt = optimize_num_sample(X_train, y_train, X_cv, y_cv)
 
-	regulating_rate_opt = optimize_regulating_rate(X_train, y_train, X_cv, y_cv)
+	regulating_rate_opt = optimize_regulating_rate(X_train[:num_sample_opt],
+                                                    y_train[:num_sample_opt],
+                                                    X_cv,
+                                                    y_cv)
 
-	mlps = train(X_train, y_train, regulating_rate_opt)
+	mlps = train(X_train[:num_sample_opt], y_train[:num_sample_opt], regulating_rate_opt)
 	hypo = predict(mlps, X_test)
 	precision = judge(hypo, y_test)
 
