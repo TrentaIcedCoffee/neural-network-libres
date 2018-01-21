@@ -18,28 +18,50 @@ class Box(object):
         return self.path + '/' + name + '.pkl'
 
     def put(self, name, data) -> 'self':
+        if os.path.isfile(self.__fullpath(name)):
+            raise ValueError('data with same name already exist')
         with open(self.__fullpath(name), 'wb') as outfile:
             pickle.dump(data, outfile)
         return self
 
     def get(self, name) -> 'data':
-        assert os.path.isfile(self.__fullpath(name)), 'File not found {}'.format(self.__fullpath(name))
+        if not os.path.isfile(self.__fullpath(name)):
+            raise ValueError('data {} not found'.format(self.__fullpath(name)))
         data = None
         with open(self.__fullpath(name), 'rb') as infile:
             data = pickle.load(infile)
         return data
 
+    def update(self, name, data) -> 'self':
+        if not os.path.isfile(self.__fullpath(name)):
+            raise ValueError('cannot find data with name {}'.format(name))
+        with open(self.__fullpath(name), 'wb') as outfile:
+            pickle.dump(data, outfile)
+        return self
+
+    def delete(self, name) -> 'self':
+        if not os.path.isfile(self.__fullpath(name)):
+            raise ValueError('data {} not found'.format(self.__fullpath(name)))
+        os.remove(self.__fullpath(name))
+        return self
+
 def __debugStorage():
     data = [0, 1, 2]
-    Box('./debug').put('simple_list', data)
-    data_load = Box('./debug').get('simple_list')
-    assert data == data_load, 'ERR __debugStorage expect {}, has {}'.format(data, data_load)
+    box = Box('./debug')
+    # Box.put
+    box.put('simple_list', data)
+    # Box.get
+    data_load = box.get('simple_list')
+    assert data == data_load, 'ERR Box.get expect {}, has {}'.format(data, data_load)
+    # Box.update
+    box.update('simple_list', [2, 1, 0])
+    assert box.get('simple_list') == [2, 1, 0], 'ERR Box.update expect {}, has {}'.format([2, 1, 0], box.get('simple_list'))
+    # Box.delete
+    box.delete('simple_list')
     # clean
-    os.remove('./debug/simple_list.pkl')
     os.rmdir('./debug')
 
 def main():
     __debugStorage()
-    print('all ok')
 
 if __name__ == '__main__': main()
