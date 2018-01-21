@@ -26,11 +26,12 @@ def main():
     # X_cv, y_cv = X_total[3000:4000], y_total[3000:4000]
     # X_test, y_test = X_total[4000:], y_total[4000:]
 
+    # prepared data
     box = stor.Box('data_debug')
-    X_total, y_total = box.get('X_total'), box.get('y_total')
-    X_train, y_train = box.get('X_train'), box.get('y_train')
+    # X_total, y_total = box.get('X_total'), box.get('y_total')
+    # X_train, y_train = box.get('X_train'), box.get('y_train')
     X_cv, y_cv = box.get('X_cv'), box.get('y_cv')
-    X_test, y_test = box.get('X_test'), box.get('y_test')
+    # X_test, y_test = box.get('X_test'), box.get('y_test')
 
     # train
     # mlps = train(X_train, y_train)
@@ -38,7 +39,8 @@ def main():
     # trained mlps
     mlps = box.get('mlps')
 
-    predict = (mlps, X_cv, y_cv)
+    # predict y_hypo
+    y_hypo_cv = predict_prob(mlps, X_cv, y_cv)
 
 def opt_num_sample(X_train, y_train, X_cv, y_cv, p_range = None):
     if p_range == None:
@@ -66,21 +68,34 @@ def train(X_train: 'nparray', y_train: 'nparray', regulating_rate: 'scalar' = 0)
         mlps[label] = MLPClassifier(hidden_layer_sizes=(25,), max_iter = 400, alpha = regulating_rate,
                                     solver = 'sgd', verbose = 10, tol = 1e-4, random_state = 1,
                                     learning_rate_init = .1)
-        mlps[label].fit(X_train, y_train)
+        mlps[label].fit(X_train, y_train_label)
     return mlps
 
-def predict(mlps: '[MLPClassifier]', X_test: 'nparray', y_test: 'nparray') -> 'y_hypo':
+def predict(mlps: '[MLPClassifier]', X: 'nparray', y: 'nparray') -> 'y_hypo':
     '''\
         predict y_hypo using trained mlps
     '''
-    num_sample = y_test.shape[0]
-    y_hypo = [None] * num_sample # same shape as y_test
-    print(y_test.shape)
-    print(y_hypo.shape)
-    exit(0)
+    num_sample = y.shape[0]
+    num_classes = np.unique(y).shape[0]
+    y_hypo = np.zeros(y.shape, dtype = np.dtype(int)) # same shape as y_test
     for mlp in mlps:
-        y_hypo.append(mlp.predict_proba(X_test)[:, 1])
+        print(mlp.predict_proba(X[:10]))
+        y_hypo = np.argmax(mlp.predict_proba(X[:10]), axis = 1).reshape(num_sample, 1)
+        print(y[:10])
+        exit(0)
     return np.array(hypo_prob_temp).T
+
+def predict_prob(mlps: '[MLPClassifier]', X: 'nparray', y: 'nparray') -> 'y_hypo':
+    '''\
+        predict y_hypo matrix with probability ising trained mlps
+    '''
+    num_classes = np.unique(y).shape[0]
+    num_sample = y.shape[0]
+    y_hypo_prob = np.zeros((num_sample, num_classes), dtype = np.dtype(float))
+    for label in range(0, num_classes):
+        hypo_label_prob = mlps[label].predict_proba(X)[:, 1] # get prob y[i, 1] == label
+        y_hypo_prob[:, label] = hypo_label_prob.T
+    return y_hypo_prob
 
 
 if __name__ == '__main__': main()
