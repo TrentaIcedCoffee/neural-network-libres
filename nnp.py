@@ -40,7 +40,7 @@ def main():
     mlps = box.get('mlps')
 
     # predict y_hypo
-    y_hypo_cv = predict_prob(mlps, X_cv, y_cv)
+    y_hypo = predict(mlps, X_cv, y_cv)
 
 def opt_num_sample(X_train, y_train, X_cv, y_cv, p_range = None):
     if p_range == None:
@@ -75,27 +75,22 @@ def predict(mlps: '[MLPClassifier]', X: 'nparray', y: 'nparray') -> 'y_hypo':
     '''\
         predict y_hypo using trained mlps
     '''
-    num_sample = y.shape[0]
-    num_classes = np.unique(y).shape[0]
-    y_hypo = np.zeros(y.shape, dtype = np.dtype(int)) # same shape as y_test
-    for mlp in mlps:
-        print(mlp.predict_proba(X[:10]))
-        y_hypo = np.argmax(mlp.predict_proba(X[:10]), axis = 1).reshape(num_sample, 1)
-        print(y[:10])
-        exit(0)
-    return np.array(hypo_prob_temp).T
+    num_classes = y.shape[0]
+    y_hypo_prob = predict_prob(mlps, X, y)
+    y_hypo = np.argmax(y_hypo_prob, axis = 1).reshape(num_classes, 1)
+    return y_hypo
 
 def predict_prob(mlps: '[MLPClassifier]', X: 'nparray', y: 'nparray') -> 'y_hypo':
     '''\
-        predict y_hypo matrix with probability ising trained mlps
+        predict y_hypo matrix with probability using trained mlps
     '''
     num_classes = np.unique(y).shape[0]
     num_sample = y.shape[0]
     y_hypo_prob = np.zeros((num_sample, num_classes), dtype = np.dtype(float))
     for label in range(0, num_classes):
-        hypo_label_prob = mlps[label].predict_proba(X)[:, 1] # get prob y[i, 1] == label
+        # get prob y[i, 1] == label using specifically train mlp[label]
+        hypo_label_prob = mlps[label].predict_proba(X)[:, 1]
         y_hypo_prob[:, label] = hypo_label_prob.T
     return y_hypo_prob
-
 
 if __name__ == '__main__': main()
