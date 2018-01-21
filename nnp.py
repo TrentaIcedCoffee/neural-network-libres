@@ -20,8 +20,9 @@ def main():
     # y_path = './data_handwritten_digits/y_total.csv'
     # X_total, y_total = datah.Data(X_path).to_nparray(float), datah.Data(y_path).to_nparray(int)
     # X_total, y_total = regulate(X_total), regulate(y_total)
-    # shuffle and split
+    # shuffle
     # X_total, y_total = shuffle(X_total, y_total)
+    # split
     # X_train, y_train = X_total[:3000], y_total[:3000]
     # X_cv, y_cv = X_total[3000:4000], y_total[3000:4000]
     # X_test, y_test = X_total[4000:], y_total[4000:]
@@ -29,18 +30,22 @@ def main():
     # prepared data
     box = stor.Box('data_debug')
     # X_total, y_total = box.get('X_total'), box.get('y_total')
-    # X_train, y_train = box.get('X_train'), box.get('y_train')
+    X_train, y_train = box.get('X_train'), box.get('y_train')
     X_cv, y_cv = box.get('X_cv'), box.get('y_cv')
     # X_test, y_test = box.get('X_test'), box.get('y_test')
 
     # train
-    # mlps = train(X_train, y_train)
+    mlps = train(X_train, y_train)
 
     # trained mlps
-    mlps = box.get('mlps')
+    # mlps = box.get('mlps')
 
     # predict y_hypo
-    y_hypo = predict(mlps, X_cv, y_cv)
+    y_cv_hypo = predict(mlps, X_cv, y_cv)
+
+    # judge
+    precision = judge(X_cv, y_cv, y_cv_hypo)
+    print(precision)
 
 def opt_num_sample(X_train, y_train, X_cv, y_cv, p_range = None):
     if p_range == None:
@@ -50,7 +55,6 @@ def opt_num_sample(X_train, y_train, X_cv, y_cv, p_range = None):
     for num_sample in range(p_range(0), p_range(1) + 1):
         pass
 
-
 def train(X_train: 'nparray', y_train: 'nparray', regulating_rate: 'scalar' = 0) -> '[MLPClassifier]':
     '''\
         train mlp models using given data and params
@@ -58,7 +62,7 @@ def train(X_train: 'nparray', y_train: 'nparray', regulating_rate: 'scalar' = 0)
         labels has to be in [0, n), n > 0
     '''
     num_classes = np.unique(y_train).shape[0]
-    num_sample = y_train.shape[0]
+    num_sample = X_train.shape[0]
     mlps = [None] * num_classes
     for label in range(0, num_classes):
         y_train_label = [None] * num_sample
@@ -71,6 +75,19 @@ def train(X_train: 'nparray', y_train: 'nparray', regulating_rate: 'scalar' = 0)
         mlps[label].fit(X_train, y_train_label)
     return mlps
 
+def predict_prob(mlps: '[MLPClassifier]', X: 'nparray', y: 'nparray') -> 'y_hypo':
+    '''\
+        predict y_hypo matrix with probability using trained mlps
+    '''
+    num_classes = np.unique(y).shape[0]
+    num_sample = X.shape[0]
+    y_hypo_prob = np.zeros((num_sample, num_classes), dtype = np.dtype(float))
+    for label in range(0, num_classes):
+        # get prob y[i, 1] == label using specifically train mlp[label]
+        hypo_label_prob = mlps[label].predict_proba(X)[:, 1]
+        y_hypo_prob[:, label] = hypo_label_prob.T
+    return y_hypo_prob
+
 def predict(mlps: '[MLPClassifier]', X: 'nparray', y: 'nparray') -> 'y_hypo':
     '''\
         predict y_hypo using trained mlps
@@ -80,17 +97,15 @@ def predict(mlps: '[MLPClassifier]', X: 'nparray', y: 'nparray') -> 'y_hypo':
     y_hypo = np.argmax(y_hypo_prob, axis = 1).reshape(num_classes, 1)
     return y_hypo
 
-def predict_prob(mlps: '[MLPClassifier]', X: 'nparray', y: 'nparray') -> 'y_hypo':
+def judge(X: 'nparray', y: 'nparray', y_hypo: 'nparray') -> 'scalar':
     '''\
-        predict y_hypo matrix with probability using trained mlps
+        true positive / sample number
     '''
-    num_classes = np.unique(y).shape[0]
-    num_sample = y.shape[0]
-    y_hypo_prob = np.zeros((num_sample, num_classes), dtype = np.dtype(float))
-    for label in range(0, num_classes):
-        # get prob y[i, 1] == label using specifically train mlp[label]
-        hypo_label_prob = mlps[label].predict_proba(X)[:, 1]
-        y_hypo_prob[:, label] = hypo_label_prob.T
-    return y_hypo_prob
+    num_correct = 0
+    num_sample = X.shape[0]
+    for i in range(0, num_sample):
+        if y_hypo[i] == y[i]:
+            num_correct += 1
+    return num_correct / num_sample
 
 if __name__ == '__main__': main()
