@@ -44,7 +44,7 @@ def main():
 
     # train
     mlps = train(X_train, y_train, regulating_rate_opt)
-    box.update('mlps', mlps)
+    box.put_or_replace('mlps', mlps)
 
     # trained mlps
     # mlps = box.get('mlps')

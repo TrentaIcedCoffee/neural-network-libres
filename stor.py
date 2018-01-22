@@ -32,7 +32,7 @@ class Box(object):
             data = pickle.load(infile)
         return data
 
-    def update(self, name, data) -> 'self':
+    def replace(self, name, data) -> 'self':
         if not os.path.isfile(self.__fullpath(name)):
             raise ValueError('cannot find data with name {}'.format(name))
         with open(self.__fullpath(name), 'wb') as outfile:
@@ -45,6 +45,11 @@ class Box(object):
         os.remove(self.__fullpath(name))
         return self
 
+    def put_or_replace(self, name, data) -> 'self':
+        with open(self.__fullpath(name), 'wb') as outfile:
+            pickle.dump(data, outfile)
+        return self
+
 def __debugStorage():
     data = [0, 1, 2]
     box = Box('./debug')
@@ -53,9 +58,9 @@ def __debugStorage():
     # Box.get
     data_load = box.get('simple_list')
     assert data == data_load, 'ERR Box.get expect {}, has {}'.format(data, data_load)
-    # Box.update
-    box.update('simple_list', [2, 1, 0])
-    assert box.get('simple_list') == [2, 1, 0], 'ERR Box.update expect {}, has {}'.format([2, 1, 0], box.get('simple_list'))
+    # Box.replace
+    box.replace('simple_list', [2, 1, 0])
+    assert box.get('simple_list') == [2, 1, 0], 'ERR Box.replace expect {}, has {}'.format([2, 1, 0], box.get('simple_list'))
     # Box.delete
     box.delete('simple_list')
     # clean
