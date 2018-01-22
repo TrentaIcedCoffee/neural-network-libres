@@ -1,4 +1,5 @@
 # Report - Nerual Network on Handwritten Digits Recognition
+##### research version in MATLAB, production version in Python 
 
 ### Preparation
 - Data has size (5000, 400). 5000 samples, each has 400 features. Output into 10 classes.
@@ -11,15 +12,15 @@
 - Each data has 400 features, which is absolutely enough for human beings to classify the data, thus we consider this is a feature-rich data set and we have high chance running into high-variance (overfitting) result. High regulating rate (lambda) might help.
 - If it's a high-variance case, the best option for us is to use more samples and apply high regulating rate (lambda).
 - We firstly run sample number [2000, 3000], if we see converge, we take the most optimized sample number in that range. Otherwise, we need to run sample number [1, 1000] to make sure of converge.
-- If it's a high-variance case, we hope to see the plot like below. 
-	- Cross validation curve and training curve never go across. 
+- If it's a high-variance case, we hope to see the plot like below.
+	- Cross validation curve and training curve never go across.
 	- Difference between cv and train is getting smaller as sample increases
 	- Relatively high cross validation cost and low train cost  	
 	- ![high_variance](/readme_resource/high_variance.png)
 
-### Run 1 
+### Run 1
 #### sample number [2000, 3000] (max iteration 400, 1001 runs, takes 2.23 hours)
-![run1_2000_3000](/readme_resource/run1_2000_3000.jpg) 
+![run1_2000_3000](/readme_resource/run1_2000_3000.jpg)
 - Most optimized sample number is 2989.
 - We see cross validation and train doesn't cross
 - We fail to see convergence.
@@ -67,3 +68,7 @@
 ## Summary
 - We boosted the accuracy of the training model to the top. And 93.60 is the what we got.
 - If we want higher accuracy, we have to try different architectures.
+
+# Production mode in Python
+- **Test accuracy 92.60**  
+![product](/readme_resource/product.JPG)
