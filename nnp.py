@@ -17,8 +17,8 @@ def regulate(X: 'nparray') -> 'nparray':
 def main():
     # data from csv
     # X_path = './data_handwritten_digits/X_total.csv'
-    # X_total, y_total = datah.Data(X_path).to_nparray(float), datah.Data(y_path).to_nparray(int)
     # y_path = './data_handwritten_digits/y_total.csv'
+    # X_total, y_total = datah.Data(X_path).to_nparray(float), datah.Data(y_path).to_nparray(int)
     # X_total, y_total = regulate(X_total), regulate(y_total)
     # y 10 -> 0, in mat file 10 -> 0
     # for i in range(0, y_total.shape[0]):

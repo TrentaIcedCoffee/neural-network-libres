@@ -12,10 +12,10 @@ class Box(object):
     def __init__(self, path, token = None):
         if not os.path.exists(path):
             os.makedirs(path)
-        self.path = path
+        self.path = path if path[-1] == '/' else path + '/'
 
     def __fullpath(self, name) -> 'full path':
-        return self.path + '/' + name + '.pkl'
+        return self.path + name + '.pkl'
 
     def put(self, name, data) -> 'self':
         if os.path.isfile(self.__fullpath(name)):
