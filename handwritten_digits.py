@@ -30,25 +30,27 @@ def prepare_data():
 
 def main():
     # get prepared data
-    box = stor.Box('./data_handwritten_digits/')
-    X_train, y_train = box.get('X_train'), box.get('y_train')
-    X_cv, y_cv = box.get('X_cv'), box.get('y_cv')
-    X_test, y_test = box.get('X_test'), box.get('y_test')
+	box = stor.Box('./data_handwritten_digits/')
+	X_train, y_train = box.get('X_train'), box.get('y_train')
+	X_cv, y_cv = box.get('X_cv'), box.get('y_cv')
+	X_test, y_test = box.get('X_test'), box.get('y_test')
 
-    # tune
-    num_sample_opt = nnp.opt_num_sample(X_train, y_train, X_cv, y_cv, (2950, 3000))
-    X_train, y_train = X_train[:num_sample_opt], y_train[:num_sample_opt]
-    regulating_rate_opt = nnp.opt_regulating_rate(X_train, y_train, X_cv, y_cv, (0, 1))
+	# tune
+	num_sample_opt = nnp.opt_num_sample(X_train, y_train, X_cv, y_cv, (2950, 3000))
+	X_train, y_train = X_train[:num_sample_opt], y_train[:num_sample_opt]
+	regulating_rate_opt = nnp.opt_regulating_rate(X_train, y_train, X_cv, y_cv, (0, 1))
 
-    # train
-    mlps = nnp.train(X_train, y_train, regulating_rate_opt)
-    box.put('mlps', mlps)
+	# train
+	mlps = nnp.train(X_train, y_train, regulating_rate_opt)
+	box.update('mlps', mlps)
 
-    # predict y_hypo
-    y_test_hypo = nnp.predict(mlps, X_test)
+	# predict y_hypo
+	y_test_hypo = nnp.predict(mlps, X_test)
 
-    # judge
-    precision = nnp.judge(y = y_test, y_hypo = y_test_hypo)
-    print(precision)
+	# judge
+	precision = nnp.judge(y = y_test, y_hypo = y_test_hypo)
+	print('num_sample_opt: {}'.format(num_sample_opt))
+	print('regulating_rate_opt: {}'.format(regulating_rate_opt))
+	print('precision: {}'.format(precision))
 
 if __name__ == '__main__': main()
