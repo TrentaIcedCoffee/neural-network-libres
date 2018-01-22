@@ -37,11 +37,17 @@ def main():
     X_cv, y_cv = box.get('X_cv'), box.get('y_cv')
     X_test, y_test = box.get('X_test'), box.get('y_test')
 
+    # tune
+    num_sample_opt = opt_num_sample(X_train, y_train, X_cv, y_cv, (2950, 3000))
+    X_train, y_train = X_train[:num_sample_opt], y_train[:num_sample_opt]
+    regulating_rate_opt = opt_regulating_rate(X_train, y_train, X_cv, y_cv, (0, 1))
+
     # train
-    # mlps = train(X_train, y_train)
+    mlps = train(X_train, y_train, regulating_rate_opt)
+    box.update('mlps', mlps)
 
     # trained mlps
-    mlps = box.get('mlps')
+    # mlps = box.get('mlps')
 
     # predict y_hypo
     y_test_hypo = predict(mlps, X_test)
@@ -50,27 +56,47 @@ def main():
     precision = judge(y = y_test, y_hypo = y_test_hypo)
     print(precision)
 
-# def opt_num_sample(X_train, y_train, X_cv, y_cv, p_range = None, regulating_rate = 0):
-#     if p_range == None:
-#         p_range = (1, X_train.shape[0]) # default p_range, (1, max) inclusive
-#     num_sample_opt = 0
-#     precision_opt = 0
-#     for num_sample in range(p_range(0), p_range(1) + 1):
-#         mlps = train(X_train[:num_sample], y_train[:num_sample], regulating_rate)
-#         hypo = predict(mlps, X_cv)
-#         precision = judge()
-#
-# def optimize_num_sample(X_train, y_train, X_cv, y_cv):
-# 	num_sample_opt = 0
-# 	precision_opt = 0
-# 	for num_sample in range(2800, X_train.shape(0) + 1):
-# 		mlps = train(X_train[:num_sample], y_train[:num_sample], 0)
-# 		hypo = predict(mlps, X_cv)
-# 		precision = judge(hypo, y_cv)
-# 		if precision > precision_opt:
-# 			precision_opt = precision
-# 			num_sample_opt = num_sample
-# 	return num_sample_opt
+def opt_num_sample(X_train, y_train, X_cv, y_cv, p_range = None, regulating_rate = 0):
+    if p_range == None:
+        p_range = (1, X_train.shape[0]) # default p_range, (1, max) inclusive
+    num_sample_opt = 0
+    precision_opt = 0
+    for num_sample in range(p_range[0], p_range[1] + 1):
+        mlps = train(X_train[:num_sample], y_train[:num_sample], regulating_rate)
+        y_cv_hypo = predict(mlps, X_cv)
+        precision = judge(y = y_cv, y_hypo = y_cv_hypo)
+        if precision > precision_opt:
+            num_sample_opt = num_sample
+            precision_opt = precision
+    return num_sample_opt
+
+def opt_regulating_rate(X_train, y_train, X_cv, y_cv, range_regulating_rate = (0, 1)):
+    regulating_rate_opt = 0
+    precision_opt = 0
+    for regulating_rate_100 in range(int(range_regulating_rate[0] * 100),
+                                        int(range_regulating_rate[1] * 100 + 1)):
+        regulating_rate = regulating_rate_100 / 100
+        mlps = train(X_train, y_train, regulating_rate)
+        y_cv_hypo = predict(mlps, X_cv)
+        precision = judge(y = y_cv, y_hypo = y_cv_hypo)
+        if precision > precision_opt:
+            regulating_rate_opt = regulating_rate
+            precision_opt = precision
+    return regulating_rate_opt
+
+def optimize_regulating_rate(X_train, y_train, X_cv, y_cv):
+    regulating_rate_opt = 0
+    precision_opt = 0
+    for i in range(0, 100):
+        regulating_rate = i / 100 # regulating_rate: [0, 1) with precision 0.01
+        print(regulating_rate)
+        mlps = train(X_train, y_train, regulating_rate)
+        hypo = predict(mlps, X_cv)
+        precision = judge(hypo, y_cv)
+        if precision > precision_opt:
+            precision_opt = precision
+            regulating_rate_opt = regulating_rate
+    return regulating_rate_opt
 
 def train(X_train: 'nparray', y_train: 'nparray', regulating_rate: 'scalar' = 0) -> '[MLPClassifier]':
     '''\
